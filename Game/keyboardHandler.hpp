@@ -2,7 +2,8 @@
 #define KEYBOARDHANDLER_HPP
 
 #include "camera.hpp"
+#include "hero.hpp"
 
-void cameraKeys(camera & currentCamera);
+void cameraKeys(camera & currentCamera, hero & mainCharter);
 
 #endif

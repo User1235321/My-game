@@ -2,9 +2,13 @@
 #include <vector>
 #include <iostream>
 #include <Windows.h>
+#include <chrono>
+#include <ctime>
 
 #include "camera.hpp"
 #include "keyboardHandler.hpp"
+#include "hero.hpp"
+#include "myFloor.hpp"
 
 int main()
 {
@@ -12,43 +16,24 @@ int main()
 
     sf::RenderWindow window(sf::VideoMode::getDesktopMode(), "SFML works!", sf::Style::None);
     camera newCamera(0, 0, 1);
-    // TEST DATA
-    std::vector< sf::CircleShape > myShapes;
-    sf::CircleShape circle1;
-    circle1.setFillColor(sf::Color::Green);
-    circle1.setRadius(200);
-    myShapes.push_back(circle1);
-    sf::CircleShape circle2;
-    circle2.setFillColor(sf::Color::Red);
-    circle2.setRadius(20);
-    circle2.setPosition({1000, 1000});
-    myShapes.push_back(circle2);
-    sf::CircleShape circle3;
-    circle3.setFillColor(sf::Color::White);
-    circle3.setRadius(100);
-    circle3.setPosition({ 500, 500 });
-    myShapes.push_back(circle3);
-    sf::RectangleShape rect;
-    rect.setFillColor(sf::Color::Yellow);
-    rect.setPosition({ -500, -500 });
-    rect.setSize({400, 400});
-    //TEST END
+
+    hero mainCharter(1920 / 2, 1080 / 2, sf::Texture("images/standartHero.png"));
+    myFloor mainFloor(-2040, -2040, 2040, 2040, 60, sf::Texture("images/standartFloor.png"));
+
+    auto start = std::chrono::system_clock::now();
     while (!GetAsyncKeyState(VK_ESCAPE))
     {
-
-        cameraKeys(newCamera);
-        /*while (const std::optional event = window.pollEvent())
+        if (std::chrono::duration< double >(std::chrono::system_clock::now() - start).count() > 0.001)
         {
-            if (event->is<sf::Event::Closed>())
-                window.close();
-        }*/
-
-        window.clear();
-        for (auto & shape : myShapes)
-        {
-            window.draw(newCamera.zoom(shape));
+            cameraKeys(newCamera, mainCharter);
+            window.clear();
+            for (const sf::RectangleShape& rect : mainFloor.returnVec())
+            {
+                window.draw(newCamera.zoom(rect));
+            }
+            window.draw(newCamera.zoom(mainCharter.returnRect()));
+            window.display();
+            start = std::chrono::system_clock::now();
         }
-        window.draw(newCamera.zoom(rect));
-        window.display();
     }
-}
+} 
